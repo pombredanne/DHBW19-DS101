@@ -1,0 +1,24 @@
+version: "3.1"
+services:
+  notebook:
+    build:
+      context: analysisEnvironment
+      dockerfile: notebook.Dockerfile
+    container_name: notebook
+    volumes:
+      - "./analysis:/home/jovyan/work"
+      - "./data:/home/jovyan/data"
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+  postgis:
+    image: mdillon/postgis:11
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./postgis/data:/data"
+      - "./postgis/postgis:/var/lib/postgresql"
+    environment:
+      - POSTGRES_PASSWORD=analytics
+      - POSTGRES_USER=analytics
+      - POSTGRES_DB=analytics
