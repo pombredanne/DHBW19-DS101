@@ -1,3 +1,4 @@
 pandas-profiling==2.3.0
 pandas==0.25.1
 umap-learn
+holoviews

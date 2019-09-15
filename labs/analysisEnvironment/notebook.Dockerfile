@@ -4,3 +4,4 @@ MAINTAINER geoHeil <georg.heiler@csh.ac.at>
 COPY requirements.txt ./requirements.txt
 
 RUN pip install -r requirements.txt
+RUN jupyter labextension install jupyterlab_bokeh
