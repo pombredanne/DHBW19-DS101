@@ -8,6 +8,7 @@ services:
     volumes:
       - "./analysis:/home/jovyan/work"
       - "./data:/home/jovyan/data"
+      - "./solutions:/home/jovyan/solutions"
     ports:
       - "8888:8888"
       - "4040:4040"
