@@ -4,3 +4,8 @@ holoviews
 lxml
 pandas_datareader
 fastparquet
+featuretools
+graphviz
+lime
+shap
+xgboost
