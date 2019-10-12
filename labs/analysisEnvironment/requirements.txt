@@ -9,3 +9,9 @@ graphviz
 lime
 shap
 xgboost
+torch
+torchvision
+fastai
+prefect
+prefect[viz]
+mlflow
