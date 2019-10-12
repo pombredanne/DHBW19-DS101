@@ -5,3 +5,7 @@ COPY requirements.txt ./requirements.txt
 
 RUN pip install -r requirements.txt
 RUN jupyter labextension install jupyterlab_bokeh
+
+RUN whoami
+USER root
+RUN apt-get update && apt-get install -y graphviz
