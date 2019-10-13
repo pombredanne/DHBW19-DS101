@@ -1,0 +1,98 @@
+pipelines:
+  demo_ci_pipeline:
+    group: demo_group
+    materials:
+      demo_git: # name of material
+        git: https://github.com/ThoughtWorksInc/ml-app-template.git
+    stages:
+      - commit: # name of stage
+          clean_workspace: true
+          jobs:
+            build_and_test: # name of the job
+              elastic_profile_id: demo-app
+              tasks:
+              - exec: # indicates type of task
+                  command: bash
+                  arguments:
+                  - -c
+                  - docker build . -t davified/ml-app-template:v${GO_PIPELINE_LABEL} --target Base
+              - exec:
+                  command: bash
+                  arguments:
+                  - -c
+                  - docker run davified/ml-app-template:v${GO_PIPELINE_LABEL} bin/test.sh
+              - exec:
+                  command: bash
+                  arguments:
+                  - -c
+                  - docker build . -t davified/ml-app-template:v${GO_PIPELINE_LABEL} --target Build --build-arg CI=true
+              - exec:
+                  command: bash
+                  arguments:
+                  - -c
+                  - docker run davified/ml-app-template:v${GO_PIPELINE_LABEL} bin/test_model_metrics.sh
+              - exec:
+                  command: bash
+                  arguments:
+                  - -c
+                  - echo "v${GO_PIPELINE_LABEL}" > docker_image_tag.txt
+              artifacts:
+              - external:
+                  id: docker-release-candidate
+                  store_id: dockerhub # artifact store id (configured on gocd UI)
+                  configuration:
+                    options:
+                      Image: davified/ml-app-template
+                      Tag: v${GO_PIPELINE_LABEL}
+              - build:
+                  source: docker_image_tag.txt
+                  destination: metadata # destination directory is relative to the artifacts folder on go server
+      - deploy_staging:
+          clean_workspace: true
+          jobs:
+            deploy_staging:
+              elastic_profile_id: docker-dind-kubectl
+              tasks:
+              - exec:
+                  command: bash
+                  arguments:
+                  - -c
+                  - kubectl set image deployment/ml-cd-starter-kit-ml-app-template ml-app-template=davified/ml-app-template:v${GO_PIPELINE_LABEL} # ml-app-template is the name of the chart in ml-cd-starter-kit
+      - deploy_prod:
+          clean_workspace: true
+          approval:
+            type: manual
+          jobs:
+            deploy_staging:
+              elastic_profile_id: docker-dind-kubectl
+              tasks:
+              - exec:
+                  command: bash
+                  arguments:
+                  - -c
+                  - kubectl set image deployment/ml-cd-starter-kit-prod-ml-app-template ml-app-template=davified/ml-app-template:v${GO_PIPELINE_LABEL}  # update the container used by deployment/ml-cd-starter-kit-PROD-ml-app-template
+  # second pipeline
+  evaluate_model:   
+    group: demo_group
+    materials:
+      myupstream:
+        pipeline: demo_ci_pipeline
+        stage: commit
+    stages:
+      - default_stage:
+          clean_workspace: true
+          jobs:
+            default_job:
+              elastic_profile_id: demo-app
+              tasks:
+              - fetch:
+                  pipeline: demo_ci_pipeline
+                  stage: commit
+                  job: build_and_test
+                  source: metadata
+                  destination: .
+              - exec:
+                  command: bash
+                  arguments:
+                  - -c
+                  - docker run davified/ml-app-template:$(cat metadata/docker_image_tag.txt) bin/test_model_metrics.sh
