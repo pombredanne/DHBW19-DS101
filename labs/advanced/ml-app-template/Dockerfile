@@ -41,7 +41,6 @@ FROM Build as Dev
 # RUN pip install -r /home/ml-app-template/requirements-dev.txt
 RUN pipenv install --dev
 
-
 RUN git config --global credential.helper 'cache --timeout=36000'
 
 EXPOSE 8080
