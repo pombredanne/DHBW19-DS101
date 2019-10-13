@@ -30,7 +30,7 @@ ENV CI=$CI
 
 RUN pipenv run /home/ml-app-template/bin/train_model.sh
 
-CMD ["pipenv run /home/ml-app-template/bin/start_server.sh"]
+CMD pipenv run /home/ml-app-template/bin/start_server.sh
 
 # ================================================================= #
 # ------------ Third stage in our multistage Dockerfile ----------- #
@@ -45,4 +45,4 @@ RUN git config --global credential.helper 'cache --timeout=36000'
 
 EXPOSE 8080
 
-CMD ["pipenv run /home/ml-app-template/bin/start_server.sh"]
+CMD pipenv run /home/ml-app-template/bin/start_server.sh

@@ -6,4 +6,4 @@ CI=os.environ.get('CI', '')
 
 # replace the following with the external IP of your k8s services
 MLFLOW_IP='35.185.191.70'
-FLUENTD_IP='35.198.222.225'
+FLUENTD_IP='34.89.225.95'

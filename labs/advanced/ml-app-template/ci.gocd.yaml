@@ -3,7 +3,7 @@ pipelines:
     group: demo_group
     materials:
       demo_git: # name of material
-        git: https://github.com/ThoughtWorksInc/ml-app-template.git
+        git: https://github.com/lecturing/DHBW-DS101-ml-app-template.git
     stages:
       - commit: # name of stage
           clean_workspace: true
@@ -15,22 +15,22 @@ pipelines:
                   command: bash
                   arguments:
                   - -c
-                  - docker build . -t davified/ml-app-template:v${GO_PIPELINE_LABEL} --target Base
+                  - docker build . -t lecturing/dhbw-ds101-ml-app-template:v${GO_PIPELINE_LABEL} --target Base
               - exec:
                   command: bash
                   arguments:
                   - -c
-                  - docker run davified/ml-app-template:v${GO_PIPELINE_LABEL} bin/test.sh
+                  - docker run lecturing/dhbw-ds101-ml-app-template:v${GO_PIPELINE_LABEL} bin/test.sh
               - exec:
                   command: bash
                   arguments:
                   - -c
-                  - docker build . -t davified/ml-app-template:v${GO_PIPELINE_LABEL} --target Build --build-arg CI=true
+                  - docker build . -t lecturing/dhbw-ds101-ml-app-template:v${GO_PIPELINE_LABEL} --target Build --build-arg CI=true
               - exec:
                   command: bash
                   arguments:
                   - -c
-                  - docker run davified/ml-app-template:v${GO_PIPELINE_LABEL} bin/test_model_metrics.sh
+                  - docker run lecturing/dhbw-ds101-ml-app-template:v${GO_PIPELINE_LABEL} bin/test_model_metrics.sh
               - exec:
                   command: bash
                   arguments:
@@ -42,7 +42,7 @@ pipelines:
                   store_id: dockerhub # artifact store id (configured on gocd UI)
                   configuration:
                     options:
-                      Image: davified/ml-app-template
+                      Image: lecturing/dhbw-ds101-ml-app-template
                       Tag: v${GO_PIPELINE_LABEL}
               - build:
                   source: docker_image_tag.txt
@@ -57,7 +57,7 @@ pipelines:
                   command: bash
                   arguments:
                   - -c
-                  - kubectl set image deployment/ml-cd-starter-kit-ml-app-template ml-app-template=davified/ml-app-template:v${GO_PIPELINE_LABEL} # ml-app-template is the name of the chart in ml-cd-starter-kit
+                  - kubectl set image deployment/ml-cd-starter-kit-ml-app-template ml-app-template=lecturing/dhbw-ds101-ml-app-template:v${GO_PIPELINE_LABEL} # ml-app-template is the name of the chart in ml-cd-starter-kit
       - deploy_prod:
           clean_workspace: true
           approval:
@@ -70,7 +70,7 @@ pipelines:
                   command: bash
                   arguments:
                   - -c
-                  - kubectl set image deployment/ml-cd-starter-kit-prod-ml-app-template ml-app-template=davified/ml-app-template:v${GO_PIPELINE_LABEL}  # update the container used by deployment/ml-cd-starter-kit-PROD-ml-app-template
+                  - kubectl set image deployment/ml-cd-starter-kit-prod-ml-app-template ml-app-template=lecturing/dhbw-ds101-ml-app-template:v${GO_PIPELINE_LABEL}  # update the container used by deployment/ml-cd-starter-kit-PROD-ml-app-template
   # second pipeline
   evaluate_model:   
     group: demo_group
@@ -95,4 +95,4 @@ pipelines:
                   command: bash
                   arguments:
                   - -c
-                  - docker run davified/ml-app-template:$(cat metadata/docker_image_tag.txt) bin/test_model_metrics.sh
+                  - docker run lecturing/dhbw-ds101-ml-app-template:$(cat metadata/docker_image_tag.txt) bin/test_model_metrics.sh

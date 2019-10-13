@@ -1,0 +1,29 @@
+The {{ .Release.Name }} cluster and associated extras have been installed.
+
+You can access your services (GoCD, MLFlow, Kibana, Grafana) as follows:
+
+  * From outside the cluster, run these commands:
+    
+    kubectl get svc
+
+    Copy and paste the corresponding EXTERNAL-IP and PORT (the port on the left is the exposed port) 
+    in your browser.
+
+    NOTE:    It may take a few minutes for the pods and services to be available.
+             You can watch the status of by running 'kubectl get svc'
+           
+    WARNING: By default, most services (e.g. GoCD, MLFlow and elasticsearch) are exposed directly to 
+             the internet.
+             As a minimum level of security; switch to ClusterIP/NodePort and place an Nginx gateway 
+             infront of the cluster in order to lock down access to dangerous HTTP endpoints and verbs.
+
+  * Accessing pods on localhost:
+
+    See all pods and services, run:
+
+    kubectl get pods,svc
+    kubectl port-forward --namespace {{ .Release.Namespace }} POD_NAME PORT:PORT
+    
+    Replace POD_NAME and PORT with the pod name and port of the service that you want to access.
+    Visit http://localhost:PORT on your browser.
+    
